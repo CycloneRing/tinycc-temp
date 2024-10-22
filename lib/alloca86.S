@@ -10,7 +10,7 @@ alloca:
     and     $-4,%eax
     jz      p3
 
-#ifdef _WIN32
+#ifdef TCC_TARGET_PE
 p1:
     cmp     $4096,%eax
     jbe     p2
@@ -28,4 +28,8 @@ p3:
     push    %edx
     ret
 
+/* mark stack as nonexecutable */
+#if defined __ELF__ && defined __linux__
+    .section    .note.GNU-stack,"",@progbits
+#endif
 /* ---------------------------------------------- */

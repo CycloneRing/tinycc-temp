@@ -5,7 +5,7 @@
 
 alloca:
     pop     %rdx
-#ifdef _WIN32
+#ifdef TCC_TARGET_PE
     mov     %rcx,%rax
 #else
     mov     %rdi,%rax
@@ -14,7 +14,7 @@ alloca:
     and     $-16,%rax
     jz      p3
 
-#ifdef _WIN32
+#ifdef TCC_TARGET_PE
 p1:
     cmp     $4096,%rax
     jbe     p2
@@ -27,8 +27,16 @@ p2:
 
     sub     %rax,%rsp
     mov     %rsp,%rax
+#ifdef TCC_TARGET_PE
+    add     $32,%rax
+#endif
+
 p3:
     push    %rdx
     ret
 
+/* mark stack as nonexecutable */
+#if defined __ELF__ && defined __linux__
+    .section    .note.GNU-stack,"",@progbits
+#endif
 /* ---------------------------------------------- */
